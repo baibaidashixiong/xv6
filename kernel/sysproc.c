@@ -101,6 +101,7 @@ sys_trace(void)
   argint(0, &n); //取出a0寄存器中的值，即sys_exec的返回值（掩码）
   if (n < 0)
     return -1;
-  printf("zqz\n");
+  struct proc *p =myproc();
+  p->trace_mask = n;
   return 0;
 }
