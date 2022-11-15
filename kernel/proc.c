@@ -704,3 +704,19 @@ void procdump(void)
     printf("\n");
   }
 }
+
+//遍历进程表，找出所有未用的进程
+uint64 knproc(void){
+  struct proc *p;
+  int count=0;
+  for (p = proc; p < &proc[NPROC]; p++)
+  {
+    acquire(&p->lock);
+    if (p->state != UNUSED)
+    {
+      count++;
+    }
+    release(&p->lock);
+  }
+  return count;
+}

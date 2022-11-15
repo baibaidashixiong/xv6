@@ -80,3 +80,17 @@ kalloc(void)
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
 }
+
+//内存中的freelist通过链表的形式进行管理，通过遍历该链表获得空闲的内存块数
+uint64 kfree_memory(void){
+  struct run *r;
+  uint64 count=0;
+  acquire(&kmem.lock);
+  r = kmem.freelist;
+  while(r){
+    r=r->next;
+    count++;
+  }
+  release(&kmem.lock);
+  return count * PGSIZE;
+}

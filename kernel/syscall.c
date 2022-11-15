@@ -98,6 +98,7 @@ extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_trace(void);
+extern uint64 sys_sysinfo(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -124,11 +125,12 @@ static uint64 (*syscalls[])(void) = {
     [SYS_mkdir] sys_mkdir,
     [SYS_close] sys_close,
     [SYS_trace] sys_trace,
+    [SYS_sysinfo] sys_sysinfo,
 };
 
 static char *syscall_names[] = {
     "fork", "exit", "wait", "pipe", "read", "kill", "exec", "fstat", "chdir", "dup", "getpid", "sbrk", "sleep",
-    "uptime", "open", "write", "mknod", "unlink", "link", "mkdir", "close", "trace"};
+    "uptime", "open", "write", "mknod", "unlink", "link", "mkdir", "close", "trace", "sysinfo"};
 
 void syscall(void)
 {
@@ -142,10 +144,10 @@ void syscall(void)
     // and store its return value in p->trapframe->a0
     p->trapframe->a0 = syscalls[num](); // a0存放返回值
     int trace_mask = p->trace_mask;     //获取进程掩码
-    if ((trace_mask >> num) & 1)//右移系统调用号位为1则输出该系统调用
+    if ((trace_mask >> num) & 1)        //右移系统调用号位为1则输出该系统调用
     {
       printf("%d: syscall %s -> %d\n", p->pid, syscall_names[num - 1], p->trapframe->a0);
-    }//系统调用号从1开始
+    } //系统调用号从1开始
   }
   else
   {

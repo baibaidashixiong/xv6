@@ -5,6 +5,10 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
+
+uint64 knproc();
+uint64 kfree_memory();
 
 uint64
 sys_exit(void)
@@ -103,5 +107,21 @@ sys_trace(void)
     return -1;
   struct proc *p =myproc();
   p->trace_mask = n;
+  return 0;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  struct sysinfo info;
+  uint64 addr;
+  struct proc *p=myproc();
+  info.freemem=kfree_memory();
+  info.nproc=knproc();
+  argaddr(0, &addr);//将addr转换为a0寄存器的指针地址（存放syscall返回值）
+  if(copyout(p->pagetable, addr, (char *)&info, sizeof(info)) < 0)
+  //在给定的pagetable中拷贝info大小字节，将info拷贝到addr中
+      return -1;
+  printf("sysinfo : freemem is %d, num proc is %d\n",info.freemem,info.nproc);
   return 0;
 }
