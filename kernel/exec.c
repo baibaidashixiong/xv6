@@ -9,6 +9,7 @@
 
 static int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
+void vmprint(pagetable_t pagetable,uint16 depth);//增加函数声明
 int flags2perm(int flags)
 {
     int perm = 0;
@@ -128,6 +129,7 @@ exec(char *path, char **argv)
   p->trapframe->sp = sp; // initial stack pointer
   proc_freepagetable(oldpagetable, oldsz);
 
+  if(p->pid==1) vmprint(p->pagetable,0); //打印进程号为1的页表信息,0为递归深度
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
  bad:

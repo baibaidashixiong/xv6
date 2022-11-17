@@ -10,7 +10,6 @@
  * the kernel's page table.
  */
 pagetable_t kernel_pagetable;
-
 extern char etext[];  // kernel.ld sets this to end of kernel code.
 
 extern char trampoline[]; // trampoline.S
@@ -285,6 +284,34 @@ freewalk(pagetable_t pagetable)
   }
   kfree((void*)pagetable);
 }
+
+
+//采用DFS遍历三级页表，打印出PTE_V=1的PTE地址
+void
+vmprint(pagetable_t pagetable,uint16 depth)
+{
+  if (depth==0){
+    printf("page table %p\n",pagetable);
+  }
+  for(int i=0;i<512;i++){
+    pte_t pte = pagetable[i];
+    uint64 child = PTE2PA(pte);
+    if(pte & PTE_V){
+      if(depth>2)
+        return;
+      if(depth==2)
+        printf(".. .. ..%d: pte %p pa %p\n",i,pte,child);
+      else if(depth==1)
+        printf(".. ..%d: pte %p pa %p\n",i,pte,child);
+      else if(depth==0)
+        printf("..%d: pte %p pa %p\n",i,pte,child);
+      vmprint((pagetable_t)child,depth+1);
+    }
+  }
+
+}
+
+
 
 // Free user memory pages,
 // then free page-table pages.
