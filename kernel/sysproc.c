@@ -69,15 +69,43 @@ sys_sleep(void)
   return 0;
 }
 
-
-#ifdef LAB_PGTBL
+/* 
+  检测page table是否被读或写
+  传入分别为
+  buf（测试地址空间）
+  length （页表个数）
+  abits（位图）
+*/
+//#ifdef LAB_PGTBL
 int
 sys_pgaccess(void)
 {
-  // lab pgtbl: your code here.
+  struct proc *p =myproc();//当前进程
+  uint64 usrpg_ptr;//页表起始指针
+  int npage;//页表个数
+  uint64 usraddr;//用户地址
+  uint32 bitmap=0;
+  argaddr(0,&usrpg_ptr);
+  argint(1,&npage);
+  //传入的第一个参数以a1寄存器返回并赋给npage
+  argaddr(2,&usraddr);
+  if(npage>32)
+    return -1;//限制搜索的页表个数
+  for(int i=0;i<npage;i++){
+    pte_t *pte=walk(p->pagetable,usrpg_ptr+i*PGSIZE,0);
+    //pte_t *pte=walk(p->pagetable,i*PGSIZE,0);
+    if(*pte & PTE_A){//判断该pte是否被读或写入
+    //riscv会自动从处理PTE_A位是否被读或者写入
+      bitmap |= (1<<i);//制作位图
+      *pte &= ~PTE_A;//重置PTE_A
+    }
+  }
+  
+  copyout(p->pagetable,usraddr,(char*)&bitmap,sizeof(bitmap));
+  //将生成的bitmap从内核拷贝到用户态
   return 0;
 }
-#endif
+//#endif
 
 uint64
 sys_kill(void)

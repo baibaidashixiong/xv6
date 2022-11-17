@@ -61,9 +61,10 @@ pgaccess_test()
   buf[PGSIZE * 1] += 1;
   buf[PGSIZE * 2] += 1;
   buf[PGSIZE * 30] += 1;
+  //分别在第1,2,30页表地址内写入内容
   if (pgaccess(buf, 32, &abits) < 0)
     err("pgaccess failed");
-  if (abits != ((1 << 1) | (1 << 2) | (1 << 30)))
+  if (abits != ((1 << 1) | (1 << 2) | (1 << 30)))//判断abits的第1,2,30位是否同时为1
     err("incorrect access bits set");
   free(buf);
   printf("pgaccess_test: OK\n");

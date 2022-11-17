@@ -308,7 +308,6 @@ vmprint(pagetable_t pagetable,uint16 depth)
       vmprint((pagetable_t)child,depth+1);
     }
   }
-
 }
 
 
