@@ -127,6 +127,7 @@ usertrapret(void)
   // and switches to user mode with sret.
   uint64 trampoline_userret = TRAMPOLINE + (userret - trampoline);
   ((void (*)(uint64))trampoline_userret)(satp);
+  //从内核返回用户态，satp为当前进程用户页表的值
 }
 
 // interrupts and exceptions from kernel code go here via kernelvec,

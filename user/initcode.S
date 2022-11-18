@@ -6,9 +6,9 @@
 # exec(init, argv)
 .globl start
 start:
-        la a0, init
-        la a1, argv
-        li a7, SYS_exec
+        la a0, init # load address(伪指令)
+        la a1, argv 
+        li a7, SYS_exec # load immediate
         ecall
 
 # for(;;) exit();

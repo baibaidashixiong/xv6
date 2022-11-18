@@ -36,7 +36,7 @@ uservec:
         li a0, TRAPFRAME
         
         # save the user registers in TRAPFRAME
-        sd ra, 40(a0)
+        sd ra, 40(a0) # store double word,从a0地址偏移40读取double word(八个字节)存放到ra中
         sd sp, 48(a0)
         sd gp, 56(a0)
         sd tp, 64(a0)
@@ -105,8 +105,8 @@ userret:
         # a0: user page table, for satp.
 
         # switch to the user page table.
-        sfence.vma zero, zero
-        csrw satp, a0
+        sfence.vma zero, zero # 刷新TLB缓存
+        csrw satp, a0 # 切换到用户页表（a0的值放入satp）
         sfence.vma zero, zero
 
         li a0, TRAPFRAME
