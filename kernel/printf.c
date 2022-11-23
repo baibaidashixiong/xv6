@@ -133,3 +133,20 @@ printfinit(void)
   initlock(&pr.lock, "pr");
   pr.locking = 1;
 }
+
+void
+backtrace(void)
+{
+  printf("backtrace:\n");
+  uint64 fp=r_fp();
+  while(fp!=PGROUNDUP(fp)){
+    /*
+      fp没到栈底则循环
+      riscv中栈是自高向低地址增长的
+      所以用PGROUNDUP向上地址对齐检测
+    */
+    uint64 ra=*(uint64*)(fp-8);//返回fp地址(记得回顾指针)
+    printf("%p\n",ra);
+    fp=*(uint64*)(fp-16);//返回fp的上一个栈地址
+  }
+}
