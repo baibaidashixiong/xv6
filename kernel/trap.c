@@ -62,6 +62,7 @@ usertrap(void)
 
     // an interrupt will change sepc, scause, and sstatus,
     // so enable only now that we're done with those registers.
+    //为系统调用打开开中断
     intr_on();
 
     syscall();
@@ -77,9 +78,18 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
+  if(which_dev == 2){
+    if(p->alarm_intervel>0){
+      p->alarm_ticks++;
+      if(p->alarm_excuted==0 && p->alarm_ticks >  p->alarm_intervel){
+        *p->alarm_trapframe=*p->trapframe;//此处为什么要用指针？
+        p->alarm_ticks=0;//重置ticks
+        p->trapframe->epc=p->alarm_handler;
+        p->alarm_excuted=1;//没有重置则handler不会被重复执行
+      }
+    }
     yield();
-
+  }
   usertrapret();
 }
 
@@ -95,6 +105,7 @@ usertrapret(void)
   // kerneltrap() to usertrap(), so turn off interrupts until
   // we're back in user space, where usertrap() is correct.
   intr_off();
+  //关中断(实现原理？)
 
   // send syscalls, interrupts, and exceptions to uservec in trampoline.S
   uint64 trampoline_uservec = TRAMPOLINE + (uservec - trampoline);

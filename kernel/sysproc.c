@@ -92,3 +92,28 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_sigalarm(void){
+  int ticks;
+  uint64 handler;//存放handler地址
+  struct proc *p=myproc();
+
+  
+  argint(0,&ticks);//a0存入ticks
+  argaddr(1,&handler);//a1存入handler
+  //p->alarm_ticks=ticks;//用于对ticks计数
+  p->alarm_handler=handler;
+  p->alarm_intervel=ticks;//传入的ticks
+  return 0;
+}
+
+uint64
+sys_sigreturn(void){
+  struct proc *p=myproc();
+  if(p->alarm_excuted==1){
+    p->alarm_excuted=0;//重置executed
+    *p->trapframe=*p->alarm_trapframe;
+  }
+  return p->trapframe->a0;//restore a0
+}

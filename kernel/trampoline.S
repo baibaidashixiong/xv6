@@ -79,6 +79,7 @@ uservec:
 
         # load the address of usertrap(), from p->trapframe->kernel_trap
         ld t0, 16(a0)
+        # 问题：usertrap的地址是什么时候被保存到kernel_trap中的？usertrapret中
 
 
         # fetch the kernel page table address, from p->trapframe->kernel_satp.
@@ -96,6 +97,7 @@ uservec:
 
         # jump to usertrap(), which does not return
         jr t0
+        # debug可以看到跳转到usertrap，即内核处理trap的具体函数
 
 .globl userret
 userret:
