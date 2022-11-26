@@ -36,7 +36,8 @@ uservec:
         li a0, TRAPFRAME
         
         # save the user registers in TRAPFRAME
-        sd ra, 40(a0) # store double word,从a0地址偏移40读取double word(八个字节)存放到ra中
+        sd ra, 40(a0)
+        # store double word,将ra寄存器保存到地址为寄存器a0的值加40(offset)的位置
         sd sp, 48(a0)
         sd gp, 56(a0)
         sd tp, 64(a0)
