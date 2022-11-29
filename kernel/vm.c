@@ -22,7 +22,11 @@ kvmmake(void)
 
   kpgtbl = (pagetable_t) kalloc();
   memset(kpgtbl, 0, PGSIZE);
+  //为最高一级page directory分配物理页
 
+  //将每一个I/O设备映射到内核
+
+  //将UART0映射到内核地址空间
   // uart registers
   kvmmap(kpgtbl, UART0, UART0, PGSIZE, PTE_R | PTE_W);
 
