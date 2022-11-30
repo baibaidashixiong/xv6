@@ -233,6 +233,7 @@ r_scause()
 }
 
 // Supervisor Trap Value
+//发生trap时stval保存发生错误(如断电，page fault等异常)的虚拟地址
 static inline uint64
 r_stval()
 {
@@ -343,6 +344,7 @@ typedef uint64 *pagetable_t; // 512 PTEs
 #define PTE_W (1L << 2)
 #define PTE_X (1L << 3)
 #define PTE_U (1L << 4) // user can access
+#define PTE_COW (1L << 8) //用于判断该PTE是否用于COW
 
 // shift a physical address to the right place for a PTE.
 #define PA2PTE(pa) ((((uint64)pa) >> 12) << 10)

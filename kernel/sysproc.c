@@ -1,7 +1,7 @@
 #include "types.h"
 #include "riscv.h"
-#include "defs.h"
 #include "param.h"
+#include "defs.h"
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
@@ -69,6 +69,7 @@ sys_sleep(void)
   release(&tickslock);
   return 0;
 }
+
 
 uint64
 sys_kill(void)

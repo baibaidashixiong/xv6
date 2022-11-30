@@ -65,6 +65,11 @@ usertrap(void)
     intr_on();
 
     syscall();
+  } else if((r_scause()==13 || r_scause()==15) && uvmcheckcowpage(r_stval())) { 
+    //处理page fault例外的scause寄存器值为13和15, uvmcheckcowpager检查一个地址指向的页是否为lazy copy
+    if(uvmcowcopy(r_stval()) == -1){
+      p->killed=1;
+    }//如果内存不足则杀死进程，不然就完成对stval地址的cow
   } else if((which_dev = devintr()) != 0){
     // ok
   } else {
