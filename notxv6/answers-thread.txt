@@ -1,0 +1,8 @@
+ph.c中多线程情况下race condition的原因：
+假设value x1,x2都属于同一个bucket A(key)且不存在，此时bucket末尾指针为p
+线程1：尝试将值x1插入bucket A中，发现x1不存在，尝试将x1插入在p之后。
+-----此时发生了线程切换-----
+线程2：尝试将值x2插入bucket A中，发现x2不存在，尝试将x2插入在p之后。
+线程2：分配entry，在桶末尾插入x2
+-----此时发生了线程切换-----
+线程1：没有意识到p->next=x2，分配entry，p->next=x1，造成x2丢失

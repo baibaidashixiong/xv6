@@ -96,7 +96,9 @@ thread_create(void (*func)())
   t->state = RUNNABLE;
   // YOUR CODE HERE
   t->ucontext.ra = (uint64)func;//调用函数的返回地址
+  // thread_switch 的结尾会返回到 ra，从而运行线程代码
   t->ucontext.sp = (uint64)t->stack + STACK_SIZE;//设定栈指针
+  //因为栈从高到底生长，所以要将sp指向stack的最高地址
 }
 
 void 
