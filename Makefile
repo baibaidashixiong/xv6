@@ -189,6 +189,10 @@ UPROGS=\
 	$U/_wc\
 	$U/_zombie\
 	$U/_spin\
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8d6098147aab4b7ae0c2e8e9b0312e4cb034dfcc
 
 
 

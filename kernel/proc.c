@@ -143,8 +143,8 @@ found:
   // Set up new context to start executing at forkret,
   // which returns to user space.
   memset(&p->context, 0, sizeof(p->context));
-  p->context.ra = (uint64)forkret;
-  p->context.sp = p->kstack + PGSIZE;
+  p->context.ra = (uint64)forkret;   //进程第一个switch调用会返回的位置
+  p->context.sp = p->kstack + PGSIZE;//context的栈大小为4K
 
   return p;
 }
@@ -244,6 +244,11 @@ userinit(void)
 
   // prepare for the very first "return" from kernel to user.
   p->trapframe->epc = 0;      // user program counter
+  /* 
+      此处不像allocproc中一样，
+      需要对pc进行初始化，
+      因为唯一不是通过fork创建进程的场景就是创建第一个进程的时候
+  */
   p->trapframe->sp = PGSIZE;  // user stack pointer
 
   safestrcpy(p->name, "initcode", sizeof(p->name));
@@ -441,6 +446,7 @@ wait(uint64 addr)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
+//  该函数一直作为一个线程运行在每一个CPU核中
 void
 scheduler(void)
 {
@@ -495,6 +501,11 @@ sched(void)
 
   intena = mycpu()->intena;
   swtch(&p->context, &mycpu()->context);
+  /* 
+     &p->context表示当前内核线程内容，
+     &mycpu()->context表示当前cpu调度器线程内容
+     保存当前内核线程内容并切换到调度器线程
+  */
   mycpu()->intena = intena;
 }
 
@@ -504,13 +515,14 @@ yield(void)
 {
   struct proc *p = myproc();
   acquire(&p->lock);
-  p->state = RUNNABLE;
-  sched();
+  p->state = RUNNABLE;//RUNNING->RUNNABLE
+  sched();//切换到调度器线程
   release(&p->lock);
 }
 
 // A fork child's very first scheduling by scheduler()
 // will swtch to forkret.
+// 主要作用就是释放调度器之前获取的锁
 void
 forkret(void)
 {
@@ -519,7 +531,7 @@ forkret(void)
   // Still holding p->lock from scheduler.
   release(&myproc()->lock);
 
-  if (first) {
+  if (first) {//只在第一次调用forkret时对文件系统进行初始化
     // File system initialization must be run in the context of a
     // regular process (e.g., because it calls sleep), and thus cannot
     // be run from main().
