@@ -359,6 +359,7 @@ void net_rx(struct mbuf *m)
   uint16 type;
 
   ethhdr = mbufpullhdr(m, *ethhdr);
+  // 去除数据包的eth头数据
   if (!ethhdr) {
     mbuffree(m);
     return;
@@ -367,8 +368,10 @@ void net_rx(struct mbuf *m)
   type = ntohs(ethhdr->type);
   if (type == ETHTYPE_IP)
     net_rx_ip(m);
+    // 去除数据包的ip头数据
   else if (type == ETHTYPE_ARP)
     net_rx_arp(m);
+    // 去除数据包的arp头数据
   else
     mbuffree(m);
 }
