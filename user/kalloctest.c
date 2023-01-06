@@ -55,6 +55,8 @@ void test1(void)
     if(pid == 0){
       for(i = 0; i < N; i++) {
         a = sbrk(4096);
+        // 为当前进程分配4096字节内存
+        // a为进程未sbrk前所占内存大小
         *(int *)(a+4) = 1;
         a1 = sbrk(-4096);
         if (a1 != a + 4096) {

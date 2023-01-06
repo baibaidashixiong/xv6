@@ -42,10 +42,13 @@ sys_sbrk(void)
   int n;
 
   argint(0, &n);
+  //获取入参
   addr = myproc()->sz;
   if(growproc(n) < 0)
+  //为当前进程分配或回收n个字节内存
     return -1;
   return addr;
+  //返回进程所占的内存大小
 }
 
 uint64
